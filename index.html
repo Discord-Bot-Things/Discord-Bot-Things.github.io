@@ -167,6 +167,22 @@
     </div>
 
     <script>
+        // ===== EDIT THIS SECTION TO ADD YOUR FILES =====
+        // Format: { name: 'Display Name', path: 'actual-file-path.ext', size: size_in_bytes }
+        // If size is not provided, it will show as "Unknown size"
+        const MY_FILES = [
+            { name: 'Example PDF', path: 'example.pdf', size: 2621440 }, // 2.5 MB
+            { name: 'Cool Image', path: 'image.jpg', size: 524288 }, // 512 KB
+            { name: 'Important Document', path: 'document.docx', size: 1258291 }, // 1.2 MB
+            { name: 'Project Files', path: 'archive.zip', size: 5242880 }, // 5 MB
+            { name: 'Tutorial Video', path: 'tutorial.mp4', size: 15728640 }, // 15 MB
+            { name: 'Source Code', path: 'source.zip', size: 3145728 }, // 3 MB
+            
+            // Add more files here following the same format
+            // { name: 'Display Name', path: 'file-path.ext', size: size_in_bytes },
+        ];
+        // ===== END OF EDITABLE SECTION =====
+
         document.addEventListener('DOMContentLoaded', function() {
             const fileGrid = document.getElementById('fileGrid');
             
@@ -194,6 +210,7 @@
             
             // Function to format file size
             function formatFileSize(bytes) {
+                if (bytes === undefined || bytes === null) return 'Unknown size';
                 if (bytes === 0) return '0 Bytes';
                 
                 const k = 1024;
@@ -203,25 +220,13 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
             
-            // Function to list files in the directory
-            function listFiles() {
-                // This would normally be an AJAX request to a server-side script
-                // For demonstration, we'll use a static list of files
-                // In a real implementation, replace this with a fetch to a PHP script
-                
-                // Simulating server response
-                const files = [
-                    { name: 'example.pdf', size: 1024 * 1024 * 2.5 }, // 2.5 MB
-                    { name: 'image.jpg', size: 1024 * 512 },
-                    { name: 'document.docx', size: 1024 * 1024 * 1.2 },
-                    { name: 'archive.zip', size: 1024 * 1024 * 5 }
-                ];
-                
-                if (files.length === 0) {
+            // Function to display files from the MY_FILES array
+            function displayFiles() {
+                if (MY_FILES.length === 0) {
                     fileGrid.innerHTML = `
                         <div class="empty-state">
                             <h3>No files found</h3>
-                            <p>Place files in the same directory as this HTML file to see them here.</p>
+                            <p>Add files to the MY_FILES array in the JavaScript code.</p>
                         </div>
                     `;
                     return;
@@ -229,10 +234,8 @@
                 
                 fileGrid.innerHTML = '';
                 
-                files.forEach(file => {
-                    if (file.name === 'index.html') return; // Skip the index file itself
-                    
-                    const fileType = getFileTypeIcon(file.name);
+                MY_FILES.forEach(file => {
+                    const fileType = getFileTypeIcon(file.path);
                     const fileCard = document.createElement('div');
                     fileCard.className = 'file-card';
                     
@@ -240,15 +243,15 @@
                         <div class="file-icon ${fileType}"></div>
                         <div class="file-name">${file.name}</div>
                         <div class="file-info">${formatFileSize(file.size)}</div>
-                        <a href="${file.name}" download class="download-btn">Download</a>
+                        <a href="${file.path}" download class="download-btn">Download</a>
                     `;
                     
                     fileGrid.appendChild(fileCard);
                 });
             }
             
-            // Initial file listing
-            listFiles();
+            // Display the files when the page loads
+            displayFiles();
         });
     </script>
 </body>
