@@ -162,36 +162,69 @@
         </div>
         
         <footer>
-            Files are served from the local directory
+            Files are hosted on external servers
         </footer>
     </div>
 
     <script>
         // ===== EDIT THIS SECTION TO ADD YOUR FILES =====
-        // Format: { name: 'Display Name', path: 'actual-file-path.ext', size: size_in_bytes }
-        // If size is not provided, it will show as "Unknown size"
+        // Format: 
+        // { 
+        //   name: 'Display Name', 
+        //   url: 'https://full-url-to-file.ext', 
+        //   size: size_in_bytes (optional),
+        //   filename: 'suggested-download-filename.ext' (optional, will use the URL's filename if not provided)
+        // }
         const MY_FILES = [
-            { name: 'Example PDF', path: 'example.pdf', size: 2621440 }, // 2.5 MB
-            { name: 'Cool Image', path: 'image.jpg', size: 524288 }, // 512 KB
-            { name: 'Important Document', path: 'document.docx', size: 1258291 }, // 1.2 MB
-            { name: 'Project Files', path: 'archive.zip', size: 5242880 }, // 5 MB
-            { name: 'Tutorial Video', path: 'tutorial.mp4', size: 15728640 }, // 15 MB
-            { name: 'Source Code', path: 'source.zip', size: 3145728 }, // 3 MB
+            { 
+                name: 'Syfer Discord Bot (English)', 
+                url: 'Bot/V1.0.0/Syfer-eng.py',
+                size: 15728, // Example size (15 KB)
+                filename: 'Syfer-eng.py'
+            },
+            { 
+                name: 'Example PDF Document', 
+                url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                size: 13264, // Actual size of this example PDF
+                filename: 'example.pdf'
+            },
+            { 
+                name: 'Sample Image', 
+                url: 'https://raw.githubusercontent.com/username/repo/main/images/sample.jpg',
+                size: 524288, // Example size (512 KB)
+                filename: 'sample.jpg'
+            },
+            { 
+                name: 'Project Documentation', 
+                url: 'https://raw.githubusercontent.com/username/repo/main/docs/readme.md',
+                size: 2048, // Example size (2 KB)
+                filename: 'readme.md'
+            },
             
             // Add more files here following the same format
-            // { name: 'Display Name', path: 'file-path.ext', size: size_in_bytes },
+            // { 
+            //   name: 'Display Name', 
+            //   url: 'https://full-url-to-file.ext', 
+            //   size: size_in_bytes,
+            //   filename: 'suggested-download-filename.ext'
+            // },
         ];
         // ===== END OF EDITABLE SECTION =====
 
         document.addEventListener('DOMContentLoaded', function() {
             const fileGrid = document.getElementById('fileGrid');
             
+            // Function to extract filename from URL
+            function getFilenameFromUrl(url) {
+                return url.split('/').pop().split('#')[0].split('?')[0];
+            }
+            
             // Function to determine file type icon
             function getFileTypeIcon(fileName) {
                 const extension = fileName.split('.').pop().toLowerCase();
                 
                 const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
-                const documentTypes = ['doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'ppt', 'pptx'];
+                const documentTypes = ['doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'ppt', 'pptx', 'md'];
                 const videoTypes = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'];
                 const audioTypes = ['mp3', 'wav', 'ogg', 'flac', 'aac'];
                 const archiveTypes = ['zip', 'rar', '7z', 'tar', 'gz'];
@@ -235,7 +268,10 @@
                 fileGrid.innerHTML = '';
                 
                 MY_FILES.forEach(file => {
-                    const fileType = getFileTypeIcon(file.path);
+                    // Get filename from URL if not provided
+                    const downloadFilename = file.filename || getFilenameFromUrl(file.url);
+                    const fileType = getFileTypeIcon(downloadFilename);
+                    
                     const fileCard = document.createElement('div');
                     fileCard.className = 'file-card';
                     
@@ -243,7 +279,7 @@
                         <div class="file-icon ${fileType}"></div>
                         <div class="file-name">${file.name}</div>
                         <div class="file-info">${formatFileSize(file.size)}</div>
-                        <a href="${file.path}" download class="download-btn">Download</a>
+                        <a href="${file.url}" download="${downloadFilename}" class="download-btn">Download</a>
                     `;
                     
                     fileGrid.appendChild(fileCard);
