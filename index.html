@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Hub</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #4cc9f0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            opacity: 0.8;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+        
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .file-card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .file-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--accent-color);
+        }
+        
+        .file-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        
+        .file-info {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .download-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+        }
+        
+        .download-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* File type icons */
+        .file-icon.image::after { content: '🖼️'; }
+        .file-icon.document::after { content: '📄'; }
+        .file-icon.video::after { content: '🎬'; }
+        .file-icon.audio::after { content: '🎵'; }
+        .file-icon.archive::after { content: '🗄️'; }
+        .file-icon.code::after { content: '💻'; }
+        .file-icon.pdf::after { content: '📑'; }
+        .file-icon.unknown::after { content: '📁'; }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-color: #1e1e1e;
+                --text-color: #e0e0e0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>File Hub</h1>
+            <p class="subtitle">Quick access to your files</p>
+        </header>
+        
+        <div class="file-grid" id="fileGrid">
+            <!-- Files will be populated here -->
+        </div>
+        
+        <footer>
+            Files are served from the local directory
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileGrid = document.getElementById('fileGrid');
+            
+            // Function to determine file type icon
+            function getFileTypeIcon(fileName) {
+                const extension = fileName.split('.').pop().toLowerCase();
+                
+                const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+                const documentTypes = ['doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'ppt', 'pptx'];
+                const videoTypes = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'];
+                const audioTypes = ['mp3', 'wav', 'ogg', 'flac', 'aac'];
+                const archiveTypes = ['zip', 'rar', '7z', 'tar', 'gz'];
+                const codeTypes = ['html', 'css', 'js', 'php', 'py', 'java', 'c', 'cpp', 'cs', 'json', 'xml'];
+                
+                if (imageTypes.includes(extension)) return 'image';
+                if (documentTypes.includes(extension)) return 'document';
+                if (videoTypes.includes(extension)) return 'video';
+                if (audioTypes.includes(extension)) return 'audio';
+                if (archiveTypes.includes(extension)) return 'archive';
+                if (codeTypes.includes(extension)) return 'code';
+                if (extension === 'pdf') return 'pdf';
+                
+                return 'unknown';
+            }
+            
+            // Function to format file size
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Function to list files in the directory
+            function listFiles() {
+                // This would normally be an AJAX request to a server-side script
+                // For demonstration, we'll use a static list of files
+                // In a real implementation, replace this with a fetch to a PHP script
+                
+                // Simulating server response
+                const files = [
+                    { name: 'example.pdf', size: 1024 * 1024 * 2.5 }, // 2.5 MB
+                    { name: 'image.jpg', size: 1024 * 512 },
+                    { name: 'document.docx', size: 1024 * 1024 * 1.2 },
+                    { name: 'archive.zip', size: 1024 * 1024 * 5 }
+                ];
+                
+                if (files.length === 0) {
+                    fileGrid.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No files found</h3>
+                            <p>Place files in the same directory as this HTML file to see them here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                fileGrid.innerHTML = '';
+                
+                files.forEach(file => {
+                    if (file.name === 'index.html') return; // Skip the index file itself
+                    
+                    const fileType = getFileTypeIcon(file.name);
+                    const fileCard = document.createElement('div');
+                    fileCard.className = 'file-card';
+                    
+                    fileCard.innerHTML = `
+                        <div class="file-icon ${fileType}"></div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-info">${formatFileSize(file.size)}</div>
+                        <a href="${file.name}" download class="download-btn">Download</a>
+                    `;
+                    
+                    fileGrid.appendChild(fileCard);
+                });
+            }
+            
+            // Initial file listing
+            listFiles();
+        });
+    </script>
+</body>
+</html>
